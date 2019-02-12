@@ -78,7 +78,13 @@ class StackOverflow extends Serializable {
 
   /** Group the questions and answers together */
   def groupedPostings(postings: RDD[Posting]): RDD[(QID, Iterable[(Question, Answer)])] = {
-    ???
+    // Filter questions
+    val questions = postings.filter(_.parentId == None).map(q=>(q.id, q))
+    // Filter answers
+    val answers = postings.filter(_.parentId != None).map(a=>(a.parentId.get, a))
+    // Join both to create
+    val qaJoined = questions.join(answers)
+    qaJoined.groupByKey()
   }
 
 
